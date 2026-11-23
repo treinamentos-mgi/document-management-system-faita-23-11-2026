@@ -10,7 +10,12 @@ function getStorageDirectory() {
 }
 
 function findFile(storedName) {
-  const storagePath = path.join(storageDirectory, storedName);
+  const fileName = path.basename(storedName);
+  if (fileName !== storedName || fileName === '.' || fileName === '..') {
+    return null;
+  }
+
+  const storagePath = path.join(storageDirectory, fileName);
   if (!fs.existsSync(storagePath) || !fs.statSync(storagePath).isFile()) {
     return null;
   }

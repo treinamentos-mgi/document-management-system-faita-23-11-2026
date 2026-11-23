@@ -19,11 +19,15 @@ test('fluxo HTTP de upload, listagem e download', async (t) => {
   const form = new FormData();
   form.append('file', new Blob(['documento de teste']), 'teste.txt');
   form.append('owner', 'pessoa');
+  const existingFiles = new Set(fs.readdirSync(files.getStorageDirectory()));
   const response = await fetch(`${baseUrl}/upload`, { method: 'POST', body: form });
   assert.equal(response.status, 201);
   const uploaded = await response.json();
   const stored = repository.findById(uploaded.id);
-  const storagePath = path.join(files.getStorageDirectory(), stored.storedName);
+  const createdFile = fs.readdirSync(files.getStorageDirectory())
+    .find((file) => !existingFiles.has(file) && file === stored.storedName);
+  assert.ok(createdFile);
+  const storagePath = path.join(files.getStorageDirectory(), createdFile);
   t.after(() => fs.rmSync(storagePath, { force: true }));
   assert.equal(uploaded.originalName, 'teste.txt');
   assert.equal(uploaded.owner, 'pessoa');

@@ -9,8 +9,9 @@ const files = require('../src/repositories/document-files.repository');
 test('upload e listagem retornam metadados públicos, e download localiza o arquivo', (t) => {
   const directory = fs.mkdtempSync(path.join(files.getStorageDirectory(), 'test-'));
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
-  const storedName = path.join(path.basename(directory), 'document.txt');
-  const storagePath = path.join(directory, 'document.txt');
+  const storedName = `${path.basename(directory)}.txt`;
+  const storagePath = path.join(files.getStorageDirectory(), storedName);
+  t.after(() => fs.rmSync(storagePath, { force: true }));
   fs.writeFileSync(storagePath, 'conteúdo');
 
   assert.equal(service.upload(null), null);
@@ -35,6 +36,8 @@ test('upload e listagem retornam metadados públicos, e download localiza o arqu
   fs.unlinkSync(storagePath);
   assert.equal(service.findForDownload(uploaded.id), null);
   assert.equal(service.findForDownload('id-inexistente'), null);
+  assert.equal(files.findFile('../document.txt'), null);
+  assert.equal(files.findFile('..'), null);
 });
 
 test('download rejeita diretórios e preserva erros inesperados do filesystem', (t) => {
