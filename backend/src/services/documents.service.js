@@ -1,7 +1,6 @@
 const crypto = require('node:crypto');
-const fs = require('node:fs');
-const path = require('node:path');
 const repository = require('../repositories/documents.repository');
+const files = require('../repositories/document-files.repository');
 
 function toPublicMetadata(document) {
   return {
@@ -41,8 +40,8 @@ function findForDownload(id) {
     return null;
   }
 
-  const storagePath = path.join(repository.getStorageDirectory(), document.storedName);
-  if (!fs.existsSync(storagePath) || !fs.statSync(storagePath).isFile()) {
+  const storagePath = files.findFile(document.storedName);
+  if (!storagePath) {
     return null;
   }
 

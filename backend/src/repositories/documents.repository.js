@@ -1,10 +1,4 @@
-const fs = require('node:fs');
-const path = require('node:path');
-
-const storageDirectory = path.resolve(__dirname, '../../storage');
 const documents = new Map();
-
-fs.mkdirSync(storageDirectory, { recursive: true });
 
 function create(document) {
   documents.set(document.id, document);
@@ -21,13 +15,8 @@ function list() {
   );
 }
 
-function getStorageDirectory() {
-  return storageDirectory;
-}
-
 module.exports = {
   create,
   findById,
   list,
-  getStorageDirectory,
 };
